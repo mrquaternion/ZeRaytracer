@@ -1,27 +1,22 @@
 CC := g++
 CFLAGS := -Wall -Wextra -W -std=c++17
-CPPFLAGS := 
-
+CPPFLAGS := -Isrc
 
 BIN := raytrace
+SRCDIR := src
 
-SRC := $(shell find . -type f -name "*.cpp" ! -name "main.cpp")
+SRC := $(filter-out $(SRCDIR)/main.cpp,$(wildcard $(SRCDIR)/*.cpp))
 OBJ := $(SRC:.cpp=.o)
 
-
-$(BIN): main.cpp $(OBJ)
+$(BIN): $(SRCDIR)/main.cpp $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
 
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-.PHONY: test
+.PHONY: test clean
 test: $(BIN)
 	./$(BIN) scenes/basic.ray
 
-
-.PHONY: clean
 clean:
-	rm *.o $(BIN)
-
-
-%.o: %.cpp
-	$(CC) -c $^ $(CFLAGS)
+	rm -f $(OBJ) $(BIN)
